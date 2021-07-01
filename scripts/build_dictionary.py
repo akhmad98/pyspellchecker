@@ -585,14 +585,135 @@ def clean_russian(word_frequency, filepath_exclude, filepath_include):
                 word_frequency[line] = MINIMUM_FREQUENCY
 
     return word_frequency
+def clean_uzbek(word_frequency, filepath_exclude, filepath_include):
+    """ Clean an English word frequency list
 
+        Args:
+            word_frequency (Counter):
+            filepath_exclude (str):
+            filepath_include (str):
+    """
+    letters = set("abdefghijklmnopqrstuvxyzhc'")
+
+
+    # remove words with invalid characters
+    invalid_chars = list()
+    for key in word_frequency:
+        kl = set(key)
+        if kl.issubset(letters):
+            continue
+        invalid_chars.append(key)
+    for misfit in invalid_chars:
+        word_frequency.pop(misfit)
+
+    # remove words without a vowel
+    no_vowels = list()
+    vowels = set("aeiouo'")
+    for key in word_frequency:
+        if vowels.isdisjoint(key):
+            no_vowels.append(key)
+    for misfit in no_vowels:
+        word_frequency.pop(misfit)
+
+    # Remove double punctuations (a-a-a-able) or (a'whoppinganda'whumping)
+    double_punc = list()
+    for key in word_frequency:
+        if key.count("'") > 2 or key.count(".") > 2:
+            double_punc.append(key)
+    for misfit in double_punc:
+        word_frequency.pop(misfit)
+
+    # remove ellipses
+    ellipses = list()
+    for key in word_frequency:
+        if ".." in key:
+            ellipses.append(key)
+    for misfit in ellipses:
+        word_frequency.pop(misfit)
+
+    # leading or trailing doubles a, "a'", "zz", ending y's
+    doubles = list()
+    for key in word_frequency:
+        if key.startswith("aa"):
+            doubles.append(key)
+        elif key.startswith("a'"):
+            doubles.append(key)
+        elif key.startswith("zz"):
+            doubles.append(key)
+        elif key.endswith("yy"):
+            doubles.append(key)
+        elif key.endswith("hh"):
+            doubles.append(key)
+        elif key.endswith("ka"):
+            doubles.append(key)    
+    for misfit in doubles:
+        word_frequency.pop(misfit)
+
+    # common missing spaces
+    missing_spaces = list()
+    for key in word_frequency:
+        if key.startswith("xa") and key != "xa":
+            missing_spaces.append(key)
+        if key.startswith("xamma") and key != "xamma":
+            missing_spaces.append(key)
+        elif key.startswith("keyin") and key != "keyin":
+            missing_spaces.append(key)
+        elif key.startswith("nima") and key != "nima":
+            missing_spaces.append(key)
+        elif key.startswith("nimalar") and key != "nimalar":
+            missing_spaces.append(key)     
+        elif key.startswith("nimaga") and key != "nimaga":
+            missing_spaces.append(key)                        
+        elif key.startswith(",") and key != ",":
+            missing_spaces.append(key)
+        elif key.startswith("har") and word_frequency[key] < 15:
+            missing_spaces.append(key)
+        elif key.startswith("ayrim") and key != "ayrim":
+            missing_spaces.append(key)
+        # This one has LOTS of possibilities...
+        elif key.startswith("oldin") and word_frequency[key] < 25:
+            missing_spaces.append(key)
+        elif key.startswith("qila") and key != "qila":
+            missing_spaces.append(key)
+        elif key.startswith("balki") and key != "balki":
+            missing_spaces.append(key)
+    for misfit in missing_spaces:
+        word_frequency.pop(misfit)
+
+    # TODO: other possible fixes?
+
+    # remove small numbers
+    small_frequency = list()
+    for key in word_frequency:
+        if word_frequency[key] <= MINIMUM_FREQUENCY:
+            small_frequency.append(key)
+    for misfit in small_frequency:
+        word_frequency.pop(misfit)
+
+    # remove flagged misspellings
+    with load_file(filepath_exclude) as fobj:
+        for line in fobj:
+            line = line.strip()
+            if line in word_frequency:
+                word_frequency.pop(line)
+
+    # Add known missing words back in (ugh)
+    with load_file(filepath_include) as fobj:
+        for line in fobj:
+            line = line.strip()
+            if line in word_frequency:
+                print("{} is already found in the dictionary! Skipping!")
+            else:
+                word_frequency[line] = MINIMUM_FREQUENCY
+
+    return word_frequency
 
 def _parse_args():
     """parse arguments for command-line usage"""
     import argparse
 
     parser = argparse.ArgumentParser(description='Build a new dictionary (word frequency) using the OpenSubtitles2018 project')
-    parser.add_argument("-l", "--language", required=True, help="The language being built", choices=['en', 'es', 'de', 'fr', 'pt', 'ru'])
+    parser.add_argument("-l", "--language", required=True, help="The language being built", choices=['en', 'es', 'de', 'fr', 'pt', 'ru', 'uz'])
     parser.add_argument("-f", "--file-path", help="The path to the downloaded text file OR the saved word frequency json")
     parser.add_argument("-p", "--parse-input", action="store_true", help="Add this if providing a text file to be parsed")
     parser.add_argument("-m", "--misfit-file", action="store_true", help="Create file with words which was removed from dictionary")
@@ -658,6 +779,8 @@ if __name__ == '__main__':
     elif args.language == "pt":
         word_frequency = clean_portuguese(word_frequency, exclude_filepath, include_filepath)
     elif args.language == "ru":
+        word_frequency = clean_russian(word_frequency, exclude_filepath, include_filepath)
+    elif args.language == "uz":
         word_frequency = clean_russian(word_frequency, exclude_filepath, include_filepath)
 
     # export word frequency for review!
