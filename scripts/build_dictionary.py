@@ -654,7 +654,9 @@ def clean_uzbek(word_frequency, filepath_exclude, filepath_include):
     for key in word_frequency:
         if key.startswith("xa") and key != "xa":
             missing_spaces.append(key)
-        if key.startswith("xamma") and key != "xamma":
+        elif key.startswith("xamma") and key != "xamma":
+            missing_spaces.append(key)
+        elif key.startswith("aylangan") and key != "aylangan":
             missing_spaces.append(key)
         elif key.startswith("keyin") and key != "keyin":
             missing_spaces.append(key)
@@ -666,16 +668,20 @@ def clean_uzbek(word_frequency, filepath_exclude, filepath_include):
             missing_spaces.append(key)                        
         elif key.startswith(",") and key != ",":
             missing_spaces.append(key)
-        elif key.startswith("har") and word_frequency[key] < 15:
-            missing_spaces.append(key)
         elif key.startswith("ayrim") and key != "ayrim":
-            missing_spaces.append(key)
-        # This one has LOTS of possibilities...
-        elif key.startswith("oldin") and word_frequency[key] < 25:
             missing_spaces.append(key)
         elif key.startswith("qila") and key != "qila":
             missing_spaces.append(key)
         elif key.startswith("balki") and key != "balki":
+            missing_spaces.append(key)
+        elif key.startswith("ozbekiston") and key != "ozbekiston":
+            missing_spaces.append(key)
+        elif key.startswith("habib") and key != "habib":
+            missing_spaces.append(key)
+        # This one has LOTS of possibilities...
+        elif key.startswith("oldin") and word_frequency[key] < 25:
+            missing_spaces.append(key)
+        elif key.startswith("har") and word_frequency[key] < 15:
             missing_spaces.append(key)
     for misfit in missing_spaces:
         word_frequency.pop(misfit)
