@@ -586,7 +586,7 @@ def clean_russian(word_frequency, filepath_exclude, filepath_include):
 
     return word_frequency
 def clean_uzbek(word_frequency, filepath_exclude, filepath_include):
-    """ Clean an English word frequency list
+    """ Clean an Uzbek word frequency list
 
         Args:
             word_frequency (Counter):
@@ -781,7 +781,7 @@ if __name__ == '__main__':
     elif args.language == "ru":
         word_frequency = clean_russian(word_frequency, exclude_filepath, include_filepath)
     elif args.language == "uz":
-        word_frequency = clean_russian(word_frequency, exclude_filepath, include_filepath)
+        word_frequency = clean_uzbek(word_frequency, exclude_filepath, include_filepath)
 
     # export word frequency for review!
     word_frequency_path = os.path.join(script_path, "{}.json".format(args.language))
