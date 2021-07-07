@@ -62,7 +62,7 @@ class SpellChecker(object):
                     ).format(lang.lower())
                     raise ValueError(msg)
 
-                lang_dict = json.loads(gzip.decompress(json_open).decode("utf-8"))
+                lang_dict = json.loads(gzip.decompress(json_open).decode("unicode_escape").encode('utf-8'))
                 self._word_frequency.load_json(lang_dict)
 
     def __contains__(self, key):

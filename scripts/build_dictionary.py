@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*
 """ Desc:   A script to automate the building of multiple dictionaries based on
             known areas of concern due to the original source of the data. The
             script can be run from the source directly (-P and -p) once a
@@ -30,7 +31,8 @@ from nltk import data
 STRING_PUNCTUATION = tuple(string.punctuation)
 DIGETS = tuple(string.digits)
 MINIMUM_FREQUENCY = 15
-
+# load_file() export_word_frequency() in build_word_frequency
+# export_misfit_words() in _parse_args for cli 
 
 @contextlib.contextmanager
 def load_file(filename, encoding="utf-8"):
@@ -593,7 +595,7 @@ def clean_uzbek(word_frequency, filepath_exclude, filepath_include):
             filepath_exclude (str):
             filepath_include (str):
     """
-    letters = set("abdefghijklmnopqrstuvxyzhc'")
+    letters = set("abdefghijklmnopqrstuvxyzhc‘")
 
 
     # remove words with invalid characters
@@ -608,7 +610,7 @@ def clean_uzbek(word_frequency, filepath_exclude, filepath_include):
 
     # remove words without a vowel
     no_vowels = list()
-    vowels = set("aeiouo'")
+    vowels = set("aeiouo‘")
     for key in word_frequency:
         if vowels.isdisjoint(key):
             no_vowels.append(key)
